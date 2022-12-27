@@ -49,10 +49,10 @@ figure(5)% MOSTRAR IMAGE
 imshow(boneEdges1);% MOSTRAR IMAGE
 title('Morphological operation on Edges of the bones ');% MOSTRAR IMAGE
 
-edgeRegs = regionprops(boneEdges1, 'Area', 'PixelIdxList');%  CREAMOSSSSSSSSSSSSSSSS GRAFICA 6 EN PROCESOOOOOOOOOOOOOO
+edgeRegs = regionprops(boneEdges1, 'Area', 'PixelIdxList');% 5º CREAMOSSSSSSSSSSSSSSSS GRAFICA 6 EN PROCESOOOOOOOOOOOOOO
 AreaList = sort(vertcat(edgeRegs.Area), 'descend');
 edgeRegs(~ismember(vertcat(edgeRegs.Area), AreaList(1:2))) = [];
-edgeImg = zeros(size(img_filtered, 1), size(img_filtered,2));%    GRAFICA 6 EN PROCESOOOOOOOOOOOOOO
+edgeImg = zeros(size(img_filtered, 1), size(img_filtered,2));% 5º  GRAFICA 6 EN PROCESOOOOOOOOOOOOOO
 edgeImg(vertcat(edgeRegs.PixelIdxList)) = 1;
 
 % Do hough transform on edge image to find angles at which bone pieces are
@@ -68,7 +68,7 @@ HoughThresh = (max(maxHough) - min(maxHough))/2 + min(maxHough);
 [~, HoughPeaks] = findpeaks(maxHough,'MINPEAKHEIGHT',HoughThresh, 'MinPeakDistance', MinHoughPeakDistance);
 
 % Plot Hough detection results
-figure(6)% MOSTRAR GRAFICA
+figure(6)% MOSTRAR IMAGE
 plot(T, maxHough);
 hold on
 plot([min(T) max(T)], [HoughThresh, HoughThresh], 'g');
@@ -76,7 +76,7 @@ plot(T(HoughPeaks), maxHough(HoughPeaks), 'rx', 'MarkerSize', 12, 'LineWidth', 2
 hold off
 xlabel('Theta Value'); ylabel('Max Hough Transform');
 legend({'Max Hough Transform', 'Hough Peak Threshold', 'Detected Peak'});
-title('Hough Detection Plot : Max Hough transform vs Theta');% MOSTRAR GRAFICA
+title('Hough Detection Plot : Max Hough transform vs Theta');% MOSTRAR IMAGE
 
 
 
@@ -91,7 +91,7 @@ if numel(HoughPeaks) > 1;
         boneKernel = strel('line', HoughConvolutionLength, T(HoughPeaks(m)));
         kern = double(bwmorph(boneKernel.getnhood(), 'dilate', HoughConvolutionDilate));
         BreakStack(:,:,m) = imfilter(edgeImg, kern).*edgeImg;
-        figure(7)
+        figure()
         imshow(BreakStack(:,:,m));
         
     end
@@ -104,7 +104,7 @@ if numel(HoughPeaks) > 1;
     brImg = abs(diff(BreakStack, 1, 3)) < BreakLineTolerance*max(BreakStack(:)) & edgeImg > 0;
     [BpY, BpX] = find(abs(diff(BreakStack, 1, 3)) < BreakLineTolerance*max(BreakStack(:)) & edgeImg > 0);
     brImg = bwmorph(brImg, 'dilate', breakPointDilate);
-    figure(8);% MOSTRAR IMAGE
+    figure(9);% MOSTRAR IMAGE
     imshow(brImg);% MOSTRAR IMAGE
     brReg = regionprops(brImg, 'Area', 'MajorAxisLength', 'MinorAxisLength', ...
         'Orientation', 'Centroid');
@@ -122,7 +122,7 @@ else
 end
 
 % Draw ellipse around break location
-figure(9)% MOSTRAR IMAGE
+figure(10)% MOSTRAR IMAGE
 imshow(img)% MOSTRAR IMAGE
 hold on
 colormap('gray')
