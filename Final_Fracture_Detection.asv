@@ -21,17 +21,17 @@ breakPointDilate = 6; % Amount to dilate detected bone end points
 
 %%%
 
-img_gray = (rgb2gray(img)); % 1º FILTRADOOOOOOOOOOOOOOOOOOOOOOOOO
+img_gray = (rgb2gray(imge)); % 1º FILTRADOOOOOOOOOOOOOOOOOOOOOOOOO
 
-figure(2)% MOSTRAR IMAGE
-imshow(img_gray);% MOSTRAR IMAGE
-title('Gray Scale X Ray Image');% MOSTRAR IMAGE
+%figure(2)% MOSTRAR IMAGE
+%imshow(img_gray);% MOSTRAR IMAGE
+%title('Gray Scale X Ray Image');% MOSTRAR IMAGE
 
 img_filtered = imfilter(img_gray, fspecial('gaussian', 10, ImgBlurSigma), 'symmetric'); % Denoise  2º FILTRADOOOOOOOOOOOOOOOOOOOOOOOOO
 
-figure(3)% MOSTRAR IMAGE
-imshow(img_filtered);% MOSTRAR IMAGE
-title('denoised Gray Scale X Ray image');% MOSTRAR IMAGE
+%figure(3)% MOSTRAR IMAGE
+%imshow(img_filtered);% MOSTRAR IMAGE
+%title('denoised Gray Scale X Ray image');% MOSTRAR IMAGE
 
 % Do edge detection to find bone edges in image
 % Filter out all but the two longest lines
@@ -39,20 +39,20 @@ title('denoised Gray Scale X Ray image');% MOSTRAR IMAGE
 % ESO SIGNIFICA Q SI ES UNA FISURA HAY Q CAMBAIR ESTO
 boneEdges = edge(img_filtered, 'canny');% 3º FILTRADOOOOOOOOOOOOOOOOOOOOOOOOO
 
-figure(4)% MOSTRAR IMAGE
-imshow(boneEdges);% MOSTRAR IMAGE
-title('Edges of the bones');% MOSTRAR IMAGE
+%figure(4)% MOSTRAR IMAGE
+%imshow(boneEdges);% MOSTRAR IMAGE
+%title('Edges of the bones');% MOSTRAR IMAGE
 
 boneEdges1 = bwmorph(boneEdges, 'close');% 4º FILTRADOOOOOOOOOOOOOOOOOOOOOOOOO
 
-figure(5)% MOSTRAR IMAGE
-imshow(boneEdges1);% MOSTRAR IMAGE
-title('Morphological operation on Edges of the bones ');% MOSTRAR IMAGE
+%figure(5)% MOSTRAR IMAGE
+%imshow(boneEdges1);% MOSTRAR IMAGE
+%title('Morphological operation on Edges of the bones ');% MOSTRAR IMAGE
 
-edgeRegs = regionprops(boneEdges1, 'Area', 'PixelIdxList');% 5º CREAMOSSSSSSSSSSSSSSSS GRAFICA 6 EN PROCESOOOOOOOOOOOOOO
+edgeRegs = regionprops(boneEdges1, 'Area', 'PixelIdxList');%  CREAMOSSSSSSSSSSSSSSSS GRAFICA 6 EN PROCESOOOOOOOOOOOOOO
 AreaList = sort(vertcat(edgeRegs.Area), 'descend');
 edgeRegs(~ismember(vertcat(edgeRegs.Area), AreaList(1:2))) = [];
-edgeImg = zeros(size(img_filtered, 1), size(img_filtered,2));% 5º  GRAFICA 6 EN PROCESOOOOOOOOOOOOOO
+edgeImg = zeros(size(img_filtered, 1), size(img_filtered,2));%    GRAFICA 6 EN PROCESOOOOOOOOOOOOOO
 edgeImg(vertcat(edgeRegs.PixelIdxList)) = 1;
 
 % Do hough transform on edge image to find angles at which bone pieces are
@@ -68,15 +68,15 @@ HoughThresh = (max(maxHough) - min(maxHough))/2 + min(maxHough);
 [~, HoughPeaks] = findpeaks(maxHough,'MINPEAKHEIGHT',HoughThresh, 'MinPeakDistance', MinHoughPeakDistance);
 
 % Plot Hough detection results
-figure(6)% MOSTRAR IMAGE
-plot(T, maxHough);
+%figure(6)% MOSTRAR GRAFICA
+%plot(T, maxHough);
 hold on
-plot([min(T) max(T)], [HoughThresh, HoughThresh], 'g');
-plot(T(HoughPeaks), maxHough(HoughPeaks), 'rx', 'MarkerSize', 12, 'LineWidth', 2);
+%plot([min(T) max(T)], [HoughThresh, HoughThresh], 'g');
+%plot(T(HoughPeaks), maxHough(HoughPeaks), 'rx', 'MarkerSize', 12, 'LineWidth', 2);
 hold off
-xlabel('Theta Value'); ylabel('Max Hough Transform');
-legend({'Max Hough Transform', 'Hough Peak Threshold', 'Detected Peak'});
-title('Hough Detection Plot : Max Hough transform vs Theta');% MOSTRAR IMAGE
+%xlabel('Theta Value'); ylabel('Max Hough Transform');
+%legend({'Max Hough Transform', 'Hough Peak Threshold', 'Detected Peak'});
+%title('Hough Detection Plot : Max Hough transform vs Theta');% MOSTRAR GRAFICA
 
 
 
@@ -91,7 +91,7 @@ if numel(HoughPeaks) > 1;
         boneKernel = strel('line', HoughConvolutionLength, T(HoughPeaks(m)));
         kern = double(bwmorph(boneKernel.getnhood(), 'dilate', HoughConvolutionDilate));
         BreakStack(:,:,m) = imfilter(edgeImg, kern).*edgeImg;
-        figure()
+        figure(7)
         imshow(BreakStack(:,:,m));
         
     end
@@ -104,7 +104,7 @@ if numel(HoughPeaks) > 1;
     brImg = abs(diff(BreakStack, 1, 3)) < BreakLineTolerance*max(BreakStack(:)) & edgeImg > 0;
     [BpY, BpX] = find(abs(diff(BreakStack, 1, 3)) < BreakLineTolerance*max(BreakStack(:)) & edgeImg > 0);
     brImg = bwmorph(brImg, 'dilate', breakPointDilate);
-    figure(9);% MOSTRAR IMAGE
+    figure(8);% MOSTRAR IMAGE
     imshow(brImg);% MOSTRAR IMAGE
     brReg = regionprops(brImg, 'Area', 'MajorAxisLength', 'MinorAxisLength', ...
         'Orientation', 'Centroid');
@@ -122,7 +122,7 @@ else
 end
 
 % Draw ellipse around break location
-figure(10)% MOSTRAR IMAGE
+figure(9)% MOSTRAR IMAGE
 imshow(img)% MOSTRAR IMAGE
 hold on
 colormap('gray')
