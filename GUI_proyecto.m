@@ -22,7 +22,7 @@ function varargout = GUI_Example(varargin)
 
 % Edit the above text to modify the response to help GUI_Example
 
-% Last Modified by GUIDE v2.5 26-Dec-2022 17:04:26
+% Last Modified by GUIDE v2.5 21-Nov-2016 15:14:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -73,7 +73,6 @@ function varargout = GUI_Example_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-
 varargout{1} = handles.output;
 
 
