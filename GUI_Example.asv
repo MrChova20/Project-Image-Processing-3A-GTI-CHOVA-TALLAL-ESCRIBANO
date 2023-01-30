@@ -98,15 +98,10 @@ if not(size(image,3)==3)
    return
 end
 
-%
+
 axes(handles.imag_orig);
 imshow(image);
 set(handles.imag_orig,'UserData',image);
-
-
-axes(handles.imag_processed);
-imshow(image);
-set(handles.imag_processed,'UserData',image);
 
 
 % --- Executes on button press in saveas.
@@ -134,7 +129,7 @@ function apply_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-image1=get(handles.imag_processed,'UserData');
+image1=get(handles.imag_orig,'UserData');
 
 %% Important parameters
 
@@ -237,7 +232,6 @@ if numel(HoughPeaks) > 1;
     brReg(vertcat(brReg.Area) ~= max(vertcat(brReg.Area))) = [];
 
     % Calculate bounding ellipse
-    % CIRCULOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
     brReg.EllipseCoords = zeros(100, 2);
     t = linspace(0, 2*pi, 100);
     brReg.EllipseCoords(:,1) = brReg.Centroid(1) + brReg.MajorAxisLength/2*cos(t - brReg.Orientation);
@@ -257,9 +251,9 @@ if ~isempty(brReg)
 end
 hold off
     
-axes(handles.imag_orig);
+axes(handles.imag_processed);
 imshow(image1);
-set(handles.imag_orig,'UserData',image1);
+set(handles.imag_processed,'UserData',image_proc);
 
 
 % Hints: contents = cellstr(get(hObject,'String')) returns capture_resolution contents as cell array
