@@ -91,16 +91,23 @@ if isequal(filename,0)
 end
 
 image=imread(strcat(pathname,filename));
+%imagePrimeraVista=imread(strcat(pathname,filename));
 
 if not(size(image,3)==3)
    errordlg('The image must be colored');
    return
 end
 
+%
 axes(handles.imag_orig);
 imshow(image);
-
 set(handles.imag_orig,'UserData',image);
+
+
+axes(handles.imag_processed);
+imshow(image);
+set(handles.imag_processed,'UserData',image);
+
 
 % --- Executes on button press in saveas.
 function saveas_Callback(hObject, eventdata, handles)
@@ -119,16 +126,6 @@ image=get(handles.imag_processed,'UserData');
 
 imwrite(image,strcat(pathname,filename));
 
-% --- Executes on button press in new_window.
-function new_window_Callback(hObject, eventdata, handles)
-% hObject    handle to new_window (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-image=get(handles.imag_processed,'UserData');
-
-figure
-imshow(imag_orig);
 
 
 % --- Executes on button press in apply.
@@ -137,7 +134,7 @@ function apply_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-image=get(handles.imag_orig,'UserData');
+image1=get(handles.imag_processed,'UserData');
 
 %% Important parameters
 
@@ -150,11 +147,7 @@ breakPointDilate = 6; %es la cantidad de dilatación que se aplicará a los punt
 
 %%%
 
-<<<<<<< Updated upstream
-image_gray = (rgb2gray(image)); % 1º FILTRADOOOOOOOOOOOOOOOOOOOOOOOOO
-=======
 image_gray = (rgb2gray(image1)); % 1º se convierte a escala de grises con la función "rgb2gray"
->>>>>>> Stashed changes
 
 
 
@@ -232,6 +225,7 @@ if numel(HoughPeaks) > 1;
     brReg(vertcat(brReg.Area) ~= max(vertcat(brReg.Area))) = [];
 
     % Calculate bounding ellipse
+    % CIRCULOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
     brReg.EllipseCoords = zeros(100, 2);
     t = linspace(0, 2*pi, 100);
     brReg.EllipseCoords(:,1) = brReg.Centroid(1) + brReg.MajorAxisLength/2*cos(t - brReg.Orientation);
@@ -251,10 +245,9 @@ if ~isempty(brReg)
 end
 hold off
     
-axes(handles.imag_processed);
-imshow(image);
-
-set(handles.imag_processed,'UserData',image_proc);
+axes(handles.imag_orig);
+imshow(image1);
+set(handles.imag_orig,'UserData',image1);
 
 
 % Hints: contents = cellstr(get(hObject,'String')) returns capture_resolution contents as cell array
