@@ -141,45 +141,37 @@ image=get(handles.imag_orig,'UserData');
 
 %% Important parameters
 
-imageBlurSigma = 2; % Amount to denoise input image
-MinHoughPeakDistance = 5; % Distance between peaks in Hough transform angle detection
-HoughConvolutionLength = 40; % Length of line to use to detect bone regions
-HoughConvolutionDilate = 2; % Amount to dilate kernel for bone detection
-BreakLineTolerance = 0.25; % Tolerance for bone end detection
-breakPointDilate = 6; % Amount to dilate detected bone end points
+imageBlurSigma = 2; %cantidad de suavizado que se aplicará a la imagen de entrada.
+MinHoughPeakDistance = 5; % es la distancia mínima permitida entre los picos en la detección de ángulos en la transformada de Hough.
+HoughConvolutionLength = 40; %  tamaño de la línea que se utilizará para detectar regiones óseas en la imagen.
+HoughConvolutionDilate = 2; % cantidad de dilatación que se aplicará al kernel para la detección de huesos.
+BreakLineTolerance = 0.25; % la tolerancia para la detección del final de los huesos.
+breakPointDilate = 6; %es la cantidad de dilatación que se aplicará a los puntos detectados en el final de los huesos.
 
 %%%
 
+<<<<<<< Updated upstream
 image_gray = (rgb2gray(image)); % 1º FILTRADOOOOOOOOOOOOOOOOOOOOOOOOO
+=======
+image_gray = (rgb2gray(image1)); % 1º se convierte a escala de grises con la función "rgb2gray"
+>>>>>>> Stashed changes
 
-%figure(2)% MOSTRAR IMAGE
-%imshow(image_gray);% MOSTRAR IMAGE
-%title('Gray Scale X Ray Image');% MOSTRAR IMAGE
 
-image_filtered = imfilter(image_gray, fspecial('gaussian', 10, imageBlurSigma), 'symmetric'); % Denoise  2º FILTRADOOOOOOOOOOOOOOOOOOOOOOOOO
 
-%figure(3)% MOSTRAR IMAGE
-%imshow(image_filtered);% MOSTRAR IMAGE
-%title('denoised Gray Scale X Ray image');% MOSTRAR IMAGE
+image_filtered = imfilter(image_gray, fspecial('gaussian', 10, imageBlurSigma), 'symmetric'); %aplica un filtro gaussiano a la imagen en escala de grises "image_gray" y guarda el resultado en la variable "image_filtered". El filtro gaussiano se crea con la función "fspecial" y tiene un tamaño de 10x10 y un sigma (desviación estándar) especificado por la variable "imageBlurSigma". El parámetro "symmetric" indica que se debe
+                                                                                                %utilizar una forma de simetría en el filtrado para mejorar la conservación de los bordes.
 
-% Do edge detection to find bone edges in image
-% Filter out all but the two longest lines
-% This feature may need to be changed if break is not in middle of bone 
-% ESO SIGNIFICA Q SI ES UNA FISURA HAY Q CAMBAIR ESTO
-boneEdges = edge(image_filtered, 'canny');% 3º FILTRADOOOOOOOOOOOOOOOOOOOOOOOOO
 
-%figure(4)% MOSTRAR IMAGE
-%imshow(boneEdges);% MOSTRAR IMAGE
-%title('Edges of the bones');% MOSTRAR IMAGE
+boneEdges = edge(image_filtered, 'canny');%  detecta los bordes en la imagen "image_filtered" utilizando el algoritmo de Canny. El resultado es almacenado en la variable "boneEdges".
 
-boneEdges1 = bwmorph(boneEdges, 'close');% 4º FILTRADOOOOOOOOOOOOOOOOOOOOOOOOO
 
-%figure(5)% MOSTRAR IMAGE
-%imshow(boneEdges1);% MOSTRAR IMAGE
-%title('Morphological operation on Edges of the bones ');% MOSTRAR IMAGE
 
-edgeRegs = regionprops(boneEdges1, 'Area', 'PixelIdxList');%  CREAMOSSSSSSSSSSSSSSSS GRAFICA 6 EN PROCESOOOOOOOOOOOOOO
-AreaList = sort(vertcat(edgeRegs.Area), 'descend');
+boneEdges1 = bwmorph(boneEdges, 'close');%Esta linea de codigo utiliza la funcion "bwmorph" de Matlab, la cual permite realizar operaciones morfologicas en imágenes binarias. En este caso, se utiliza la operación "close" para cerrar pequeñas brechas o agujeros en los bordes detectados previamente en la imagen y unificar los contornos conectados. La salida se almacena en la variable "boneEdges1".
+
+
+
+edgeRegs = regionprops(boneEdges1, 'Area', 'PixelIdxList');%  Esta línea de código utiliza la función "regionprops" para identificar las regiones conectadas en la imagen "boneEdges1" y calcular propiedades de estas regiones. La propiedad "Area" se refiere al número de píxeles en cada región, mientras que la propiedad "PixelIdxList" es una lista de índices de los píxeles en cada región. Es decir, "edgeRegs" es una estructura que contiene información sobre las regiones conectadas en la imagen "boneEdges1".
+AreaList = sort(vertcat(edgeRegs.Area), 'descend'); %oncatena y ordena en orden descendente los valores de la propiedad "Area" de la estructura "edgeRegs" y los almacena en la matriz "AreaList".
 edgeRegs(~ismember(vertcat(edgeRegs.Area), AreaList(1:2))) = [];
 edgeimage = zeros(size(image_filtered, 1), size(image_filtered,2));%    GRAFICA 6 EN PROCESOOOOOOOOOOOOOO
 edgeimage(vertcat(edgeRegs.PixelIdxList)) = 1;
