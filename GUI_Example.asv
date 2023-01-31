@@ -130,6 +130,8 @@ imwrite(image,strcat(pathname,filename));
 
 % --- Executes on button press in apply.
 function apply_Callback(hObject, eventdata, handles)
+% hObject    handle to apply (see GCBO)
+% eventdata  res
 
 %% Important parameters
 % Cargar la imagen del hueso
@@ -157,7 +159,7 @@ thresholded = normalized_laplacian > 0.1;
 [rows, cols] = find(thresholded);
 bounding_box = [min(rows), min(cols), max(rows) - min(rows) + 1, max(cols) - min(cols) + 1];
 imshow(bone_image);
-rectangle('Position', bounding_box, 'EdgeColor', 'red', 'LineWidth', 4);
+rectangle('Position', bounding_box, 'EdgeColor', 'red', 'LineWidth', 2);
 
 
 % Hints: contents = cellstr(get(hObject,'String')) returns capture_resolution contents as cell array
