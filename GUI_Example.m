@@ -134,31 +134,37 @@ function apply_Callback(hObject, eventdata, handles)
 %% Important parameters
 % Cargar la imagen del hueso
 bone_image = get(handles.imag_processed,'UserData');
+% Convertir a escala de grises
+%bone_image = imread('30.jpg');
 
-% Convertir la imagen a escala de grises
-gray_image = rgb2gray(bone_image);
+% Convertir a escala de grises
+im_gray = rgb2gray(bone_image);
 
-% Aplicar un filtro de mediana para reducir el ruido
-median_filtered = medfilt2(gray_image);
+% Umbralizacion con umbral de 0.9 (va con la mayoria de los imagenes)
+threshold = graythresh(im_gray);
+im_bw = im2bw(im_gray, 0.9);
 
-% Aplicar una operación de suavizado gaussiano
-gaussian_filtered = imgaussfilt(median_filtered, 2);
 
-% Calcular la transformada de Laplaciano
-laplacian_transformed = imgradient(gaussian_filtered, 'sobel');
+% Usar la función bwlabel para identificar la conectividad
+[labeled, num_objects] = bwlabel(im_bw, 8);
+% Determinar si hay al menos una fractura
+fracture_detected = num_objects > 0;
 
-% Normalizar la transformada de Laplaciano para resaltar las fronteras
-normalized_laplacian = mat2gray(laplacian_transformed);
+% Mostrar la imagen original con un círculo rojo o azul sobre la fractura
 
-% Umbralizar la imagen normalizada para identificar las fracturas
-thresholded = normalized_laplacian > 0.1;
-
-% Dibujar un marco alrededor de las fracturas identificadas
-[rows, cols] = find(thresholded);
-bounding_box = [min(rows), min(cols), max(rows) - min(rows) + 1, max(cols) - min(cols) + 1];
-imshow(bone_image);
-rectangle('Position', bounding_box, 'EdgeColor', 'red', 'LineWidth', 4);
-
+imshow(bone_image); hold on;
+if fracture_detected
+    % Encontrar el centro de la primera área conectada
+    stats = regionprops(labeled, 'Centroid');
+    center = stats(1).Centroid;
+    
+    % Dibujar un círculo rojo en el centro de la fractura
+    radius = 50;
+    viscircles(center, radius, 'Color', 'r');
+else
+   msgbox('No hay fracturas', 'Pop-Up Message');
+  
+end
 
 % Hints: contents = cellstr(get(hObject,'String')) returns capture_resolution contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from capture_resolution
